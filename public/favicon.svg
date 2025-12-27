@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <defs>
+    <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#6366f1;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#8b5cf6;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  <!-- Background circle -->
+  <circle cx="50" cy="50" r="45" fill="url(#grad)"/>
+  <!-- Q letter stylized as quill -->
+  <path d="M50 20 C30 20, 20 35, 20 50 C20 70, 35 80, 50 80 C60 80, 68 75, 72 68 L85 85" 
+        fill="none" stroke="white" stroke-width="6" stroke-linecap="round"/>
+  <!-- Quill feather detail -->
+  <path d="M75 70 Q85 60, 78 50 Q88 55, 85 65 Q90 58, 82 52" 
+        fill="white" opacity="0.9"/>
+</svg>

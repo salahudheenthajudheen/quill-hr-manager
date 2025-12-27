@@ -1,73 +1,100 @@
-# Welcome to your Lovable project
+# Quill HR Manager
 
-## Project info
+A modern, full-featured Human Resources management system built with React, TypeScript, and Appwrite.
 
-**URL**: https://lovable.dev/projects/59830926-7570-4cb0-af44-da432916a3ef
+## Features
 
-## How can I edit this code?
+### Employee Management
+- **GW-prefixed Employee IDs** - Unique employee identification with auto-generation
+- Employee CRUD with profile management
+- Department and role assignment
+- Status tracking (Active, Inactive, On Leave)
 
-There are several ways of editing your application.
+### Admin Panel
+- **Admin Management** - Create and manage admin users
+- Dashboard with real-time statistics
+- Employee, attendance, tasks, and leave management
 
-**Use Lovable**
+### Attendance & Time Tracking
+- Check-in/Check-out with geofencing
+- WFH (Work from Home) support
+- Attendance history and reports
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/59830926-7570-4cb0-af44-da432916a3ef) and start prompting.
+### Leave Management
+- Leave request submission and approval workflow
+- Leave balance tracking (Casual, Sick, Earned)
+- Document attachments
 
-Changes made via Lovable will be committed automatically to this repo.
+### Task Management
+- Task assignment with priorities
+- Progress tracking
+- Completion notes and status updates
 
-**Use your preferred IDE**
+### Security
+- Role-based access control (Admin/Employee)
+- Content Security Policy (CSP) headers
+- Secure session management via Appwrite
+- Input validation and XSS protection
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+## Tech Stack
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+| Technology | Purpose |
+|------------|---------|
+| **React 18** | Frontend framework |
+| **TypeScript** | Type safety |
+| **Vite** | Build tool |
+| **Tailwind CSS** | Styling |
+| **shadcn/ui** | UI components |
+| **Appwrite** | Backend (Auth, Database, Storage) |
+| **Express.js** | API server for sensitive operations |
 
-Follow these steps:
+## Getting Started
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+### Prerequisites
+- Node.js 18+ 
+- npm or yarn
+- Appwrite Cloud account
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+### Installation
 
-# Step 3: Install the necessary dependencies.
-npm i
+```bash
+# Clone the repository
+git clone https://github.com/salahudheenthajudheen/quill-hr-manager.git
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
+# Navigate to project
+cd quill-hr-manager
+
+# Install dependencies
+npm install
+
+# Start development server
+npm run start
 ```
 
-**Edit a file directly in GitHub**
+### Environment Setup
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+Create a `.env` file with:
 
-**Use GitHub Codespaces**
+```env
+VITE_APPWRITE_ENDPOINT=https://cloud.appwrite.io/v1
+VITE_APPWRITE_PROJECT_ID=your_project_id
+VITE_APPWRITE_DATABASE_ID=hr_portal_db
+APPWRITE_API_KEY=your_api_key
+```
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+## Deployment
 
-## What technologies are used for this project?
+### Vercel / Netlify
+1. Connect your GitHub repository
+2. Set environment variables in dashboard
+3. Deploy
 
-This project is built with:
+### Manual Build
+```bash
+npm run build
+# Output in dist/ folder
+```
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+## License
 
-## How can I deploy this project?
-
-Simply open [Lovable](https://lovable.dev/projects/59830926-7570-4cb0-af44-da432916a3ef) and click on Share -> Publish.
-
-## Can I connect a custom domain to my Lovable project?
-
-Yes, you can!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+MIT License - feel free to use this project for personal or commercial purposes.
