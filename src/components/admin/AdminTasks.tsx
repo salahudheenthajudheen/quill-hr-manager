@@ -20,7 +20,8 @@ import {
   Clock,
   Eye,
   Loader2,
-  CalendarIcon
+  CalendarIcon,
+  Download
 } from "lucide-react";
 import {
   Dialog,
@@ -244,6 +245,28 @@ const AdminTasks = ({ onBack }: AdminTasksProps) => {
     }
   };
 
+  const handleExport = () => {
+    const headers = ["Title", "Employee", "Priority", "Status", "Due Date", "Assigned Date", "Description"];
+    const rows = filteredTasks.map(task => [
+      task.title,
+      task.employeeName,
+      task.priority,
+      task.status,
+      task.dueDate,
+      task.assignedDate,
+      task.description || ""
+    ]);
+
+    const csvContent = [headers.join(","), ...rows.map(row => row.map(cell => `"${cell}"`).join(","))].join("\n");
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = `tasks_${new Date().toISOString().split('T')[0]}.csv`;
+    link.click();
+
+    toast({ title: "Export Successful", description: "Task data exported to CSV" });
+  };
+
   if (loading) {
     return (
       <div className="p-6 flex items-center justify-center min-h-[400px]">
@@ -269,10 +292,16 @@ const AdminTasks = ({ onBack }: AdminTasksProps) => {
             <p className="text-muted-foreground">Assign and manage employee tasks</p>
           </div>
         </div>
-        <Button className="gradient-primary text-white" onClick={() => setShowCreateDialog(true)}>
-          <Plus className="h-4 w-4 mr-2" />
-          Create Task
-        </Button>
+        <div className="flex gap-2">
+          <Button variant="outline" onClick={handleExport}>
+            <Download className="h-4 w-4 mr-2" />
+            Export
+          </Button>
+          <Button className="gradient-primary text-white" onClick={() => setShowCreateDialog(true)}>
+            <Plus className="h-4 w-4 mr-2" />
+            Create Task
+          </Button>
+        </div>
       </div>
 
       {/* Stats */}

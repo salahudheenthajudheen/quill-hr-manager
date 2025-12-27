@@ -24,7 +24,8 @@ import {
   Eye,
   EyeOff,
   Loader2,
-  Sparkles
+  Sparkles,
+  Download
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -241,6 +242,30 @@ const AdminEmployees = ({ onBack }: AdminEmployeesProps) => {
     }
   };
 
+  const handleExport = () => {
+    const headers = ["Employee ID", "Name", "Email", "Phone", "Department", "Position", "Status", "Join Date", "Location"];
+    const rows = filteredEmployees.map(emp => [
+      emp.employeeId || emp.$id.substring(0, 8),
+      emp.name,
+      emp.email,
+      emp.phone,
+      emp.department,
+      emp.position,
+      emp.status,
+      emp.joinDate,
+      emp.location || ""
+    ]);
+
+    const csvContent = [headers.join(","), ...rows.map(row => row.map(cell => `"${cell}"`).join(","))].join("\n");
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = `employees_${new Date().toISOString().split('T')[0]}.csv`;
+    link.click();
+
+    toast({ title: "Export Successful", description: "Employee data exported to CSV" });
+  };
+
   if (loading) {
     return (
       <div className="p-6 flex items-center justify-center min-h-[400px]">
@@ -266,10 +291,16 @@ const AdminEmployees = ({ onBack }: AdminEmployeesProps) => {
             <p className="text-muted-foreground">Manage your organization's workforce</p>
           </div>
         </div>
-        <Button className="gradient-primary text-white" onClick={() => setShowAddDialog(true)}>
-          <UserPlus className="h-4 w-4 mr-2" />
-          Add Employee
-        </Button>
+        <div className="flex gap-2">
+          <Button variant="outline" onClick={handleExport}>
+            <Download className="h-4 w-4 mr-2" />
+            Export
+          </Button>
+          <Button className="gradient-primary text-white" onClick={() => setShowAddDialog(true)}>
+            <UserPlus className="h-4 w-4 mr-2" />
+            Add Employee
+          </Button>
+        </div>
       </div>
 
       {/* Search and Filters */}
