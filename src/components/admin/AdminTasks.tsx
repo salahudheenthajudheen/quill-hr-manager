@@ -183,7 +183,7 @@ const AdminTasks = ({ onBack }: AdminTasksProps) => {
   const handleAcceptTask = async (task: Task) => {
     setActionLoading(true);
     try {
-      await taskService.acceptTask(task.$id);
+      await taskService.approveTask(task.$id);
       toast({
         title: "Task Accepted",
         description: "The task has been marked as accepted",
