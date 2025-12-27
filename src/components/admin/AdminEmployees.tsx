@@ -23,7 +23,8 @@ import {
   Trash2,
   Eye,
   EyeOff,
-  Loader2
+  Loader2,
+  Sparkles
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -84,7 +85,9 @@ const AdminEmployees = ({ onBack }: AdminEmployeesProps) => {
     position: "",
     joinDate: new Date().toISOString().split('T')[0],
     location: "",
+    employeeId: "",
   });
+  const [generatingId, setGeneratingId] = useState(false);
 
   const { toast } = useToast();
 
@@ -166,6 +169,7 @@ const AdminEmployees = ({ onBack }: AdminEmployeesProps) => {
         position: "",
         joinDate: new Date().toISOString().split('T')[0],
         location: "",
+        employeeId: "",
       });
       fetchEmployees();
     } catch (error: unknown) {
@@ -339,7 +343,9 @@ const AdminEmployees = ({ onBack }: AdminEmployeesProps) => {
                   <div className="space-y-1">
                     <div className="flex items-center space-x-2">
                       <h3 className="font-semibold">{employee.name}</h3>
-                      <Badge variant="secondary" className="text-xs">{employee.$id.substring(0, 8)}</Badge>
+                      <Badge variant="secondary" className="text-xs font-mono">
+                        {employee.employeeId || employee.$id.substring(0, 8)}
+                      </Badge>
                       <Badge className={getStatusColor(employee.status)}>
                         {employee.status.replace('-', ' ')}
                       </Badge>
@@ -429,6 +435,45 @@ const AdminEmployees = ({ onBack }: AdminEmployeesProps) => {
                 onChange={(e) => setNewEmployee(prev => ({ ...prev, name: e.target.value }))}
                 placeholder="John Doe"
               />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="employeeId">Employee ID</Label>
+              <div className="flex gap-2">
+                <div className="relative flex-1">
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground font-mono">GW-</span>
+                  <Input
+                    id="employeeId"
+                    value={newEmployee.employeeId.replace('GW-', '')}
+                    onChange={(e) => {
+                      const value = e.target.value.replace(/\D/g, '').slice(0, 6);
+                      setNewEmployee(prev => ({ ...prev, employeeId: value ? `GW-${value}` : '' }));
+                    }}
+                    placeholder="001234"
+                    className="pl-12 font-mono"
+                  />
+                </div>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="icon"
+                  disabled={generatingId}
+                  onClick={async () => {
+                    setGeneratingId(true);
+                    try {
+                      const id = await employeeService.generateEmployeeId();
+                      setNewEmployee(prev => ({ ...prev, employeeId: id }));
+                    } catch (e) {
+                      console.error('Failed to generate ID:', e);
+                    } finally {
+                      setGeneratingId(false);
+                    }
+                  }}
+                  title="Auto-generate ID"
+                >
+                  {generatingId ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />}
+                </Button>
+              </div>
+              <p className="text-xs text-muted-foreground">Leave blank to auto-generate</p>
             </div>
             <div className="space-y-2">
               <Label htmlFor="email">Email *</Label>

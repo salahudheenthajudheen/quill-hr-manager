@@ -18,6 +18,7 @@ export interface CreateEmployeeData {
     position: string;
     joinDate: string;
     location?: string;
+    employeeId?: string;  // Custom GW-prefixed ID, auto-generated if not provided
 }
 
 export interface UpdateEmployeeData {
@@ -47,9 +48,29 @@ export interface LeaveBalance {
 export interface Employee extends EmployeeProfile {
     avatar?: string;
     leaveBalance?: string;
+    employeeId?: string;  // GW-prefixed employee ID
 }
 
 class EmployeeService {
+    /**
+     * Generate a new employee ID from the API server
+     */
+    async generateEmployeeId(): Promise<string> {
+        try {
+            const response = await fetch(`${API_URL}/api/employees/generate-id`);
+            const result = await response.json();
+            if (!response.ok) {
+                throw new Error(result.error || 'Failed to generate ID');
+            }
+            return result.employeeId;
+        } catch (error) {
+            console.error('Generate employee ID error:', error);
+            // Fallback: generate locally
+            const timestamp = Date.now().toString().slice(-6);
+            return `GW-${timestamp}`;
+        }
+    }
+
     /**
      * Create a new employee with login credentials
      * Uses the API server to create both auth account and employee document

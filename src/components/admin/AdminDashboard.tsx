@@ -16,12 +16,14 @@ import {
   UserX,
   CalendarCheck,
   CalendarX,
-  Loader2
+  Loader2,
+  Shield
 } from "lucide-react";
 import AdminEmployees from "./AdminEmployees";
 import AdminAttendance from "./AdminAttendance";
 import AdminLeaveRequests from "./AdminLeaveRequests";
 import AdminTasks from "./AdminTasks";
+import AdminManagement from "./AdminManagement";
 import { employeeService } from "@/services/employee.service";
 import { attendanceService } from "@/services/attendance.service";
 import { taskService } from "@/services/task.service";
@@ -32,7 +34,7 @@ interface AdminDashboardProps {
   onLogout: () => void;
 }
 
-type AdminPage = "dashboard" | "employees" | "attendance" | "leave" | "tasks" | "settings";
+type AdminPage = "dashboard" | "employees" | "attendance" | "leave" | "tasks" | "admins" | "settings";
 
 const AdminDashboard = ({ adminData, onLogout }: AdminDashboardProps) => {
   const [currentPage, setCurrentPage] = useState<AdminPage>("dashboard");
@@ -95,6 +97,7 @@ const AdminDashboard = ({ adminData, onLogout }: AdminDashboardProps) => {
     { id: "attendance", label: "Attendance", icon: Clock },
     { id: "leave", label: "Leave Requests", icon: Calendar },
     { id: "tasks", label: "Task Management", icon: CheckSquare },
+    { id: "admins", label: "Admin Management", icon: Shield },
     { id: "settings", label: "Settings", icon: Settings },
   ];
 
@@ -108,6 +111,8 @@ const AdminDashboard = ({ adminData, onLogout }: AdminDashboardProps) => {
         return <AdminLeaveRequests onBack={() => setCurrentPage("dashboard")} />;
       case "tasks":
         return <AdminTasks onBack={() => setCurrentPage("dashboard")} />;
+      case "admins":
+        return <AdminManagement onBack={() => setCurrentPage("dashboard")} currentAdminEmail={adminData.email} />;
       case "settings":
         return (
           <div className="p-6">
