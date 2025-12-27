@@ -61,12 +61,6 @@ const AdminLogin = ({ onLogin }: AdminLoginProps) => {
     }
   };
 
-  const handleDemoLogin = () => {
-    setEmail("admin@company.com");
-    setPassword("demo123");
-    setMessage({ type: "error", text: "Demo login requires a configured Appwrite instance. Please use real credentials." });
-  };
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-background to-secondary/50 flex items-center justify-center p-4">
       <div className="w-full max-w-md space-y-6">
@@ -143,24 +137,6 @@ const AdminLogin = ({ onLogin }: AdminLoginProps) => {
               variant="default"
             >
               {loading ? "Signing in..." : "Sign In"}
-            </Button>
-
-            <div className="relative">
-              <div className="absolute inset-0 flex items-center">
-                <span className="w-full border-t" />
-              </div>
-              <div className="relative flex justify-center text-xs uppercase">
-                <span className="bg-card px-2 text-muted-foreground">Or</span>
-              </div>
-            </div>
-
-            <Button
-              onClick={handleDemoLogin}
-              variant="outline"
-              className="w-full h-11"
-              disabled={loading}
-            >
-              Try Demo Account
             </Button>
 
             {/* Status Message */}
