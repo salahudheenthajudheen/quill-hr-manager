@@ -21,7 +21,10 @@ import {
   Eye,
   Loader2,
   CalendarIcon,
-  Download
+  Download,
+  ExternalLink,
+  Link2,
+  Trash2
 } from "lucide-react";
 import {
   Dialog,
@@ -66,6 +69,75 @@ const AdminTasks = ({ onBack }: AdminTasksProps) => {
   const [stats, setStats] = useState({ pending: 0, inProgress: 0, completed: 0, accepted: 0, rejected: 0, total: 0 });
   const { toast } = useToast();
   const { user } = useAuth();
+
+  // External Task Sheets state
+  const [externalSheets, setExternalSheets] = useState<{ id: string; title: string; url: string }[]>([]);
+  const [showAddSheetDialog, setShowAddSheetDialog] = useState(false);
+  const [newSheet, setNewSheet] = useState({ title: "", url: "" });
+
+  // Load external sheets from localStorage on mount
+  useEffect(() => {
+    const saved = localStorage.getItem('hr-external-task-sheets');
+    if (saved) {
+      try {
+        setExternalSheets(JSON.parse(saved));
+      } catch (e) {
+        console.error('Failed to parse external sheets:', e);
+      }
+    }
+  }, []);
+
+  // Save external sheets to localStorage when changed
+  const saveExternalSheets = (sheets: { id: string; title: string; url: string }[]) => {
+    setExternalSheets(sheets);
+    localStorage.setItem('hr-external-task-sheets', JSON.stringify(sheets));
+  };
+
+  const handleAddSheet = () => {
+    if (!newSheet.title.trim() || !newSheet.url.trim()) {
+      toast({
+        title: "Missing Fields",
+        description: "Please provide both title and URL",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Basic URL validation
+    try {
+      new URL(newSheet.url);
+    } catch {
+      toast({
+        title: "Invalid URL",
+        description: "Please enter a valid URL",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const sheet = {
+      id: Date.now().toString(),
+      title: newSheet.title.trim(),
+      url: newSheet.url.trim(),
+    };
+
+    saveExternalSheets([...externalSheets, sheet]);
+    setNewSheet({ title: "", url: "" });
+    setShowAddSheetDialog(false);
+    toast({
+      title: "Sheet Added",
+      description: `"${sheet.title}" has been added to external sheets`,
+    });
+  };
+
+  const handleRemoveSheet = (id: string) => {
+    const sheet = externalSheets.find(s => s.id === id);
+    saveExternalSheets(externalSheets.filter(s => s.id !== id));
+    toast({
+      title: "Sheet Removed",
+      description: `"${sheet?.title}" has been removed`,
+    });
+  };
 
   const [newTask, setNewTask] = useState<{
     title: string;
@@ -456,6 +528,82 @@ const AdminTasks = ({ onBack }: AdminTasksProps) => {
         </CardContent>
       </Card>
 
+      {/* External Task Sheets Section */}
+      <Card>
+        <CardHeader>
+          <div className="flex items-center justify-between">
+            <div>
+              <CardTitle className="flex items-center">
+                <Link2 className="h-5 w-5 mr-2" />
+                External Task Sheets
+              </CardTitle>
+              <CardDescription>
+                Quick access to external spreadsheets and task tracking documents
+              </CardDescription>
+            </div>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setShowAddSheetDialog(true)}
+            >
+              <Plus className="h-4 w-4 mr-2" />
+              Add Sheet
+            </Button>
+          </div>
+        </CardHeader>
+        <CardContent>
+          {externalSheets.length === 0 ? (
+            <div className="text-center py-8 text-muted-foreground">
+              <Link2 className="h-12 w-12 mx-auto mb-4 opacity-50" />
+              <p>No external sheets added yet</p>
+              <p className="text-sm mt-1">Add links to Google Sheets, Excel Online, or other task tracking tools</p>
+              <Button className="mt-4" variant="outline" onClick={() => setShowAddSheetDialog(true)}>
+                <Plus className="h-4 w-4 mr-2" />
+                Add Your First Sheet
+              </Button>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {externalSheets.map((sheet) => (
+                <div
+                  key={sheet.id}
+                  className="flex items-center justify-between p-4 border rounded-lg hover:bg-muted/30 transition-colors group"
+                >
+                  <div className="flex items-center space-x-3 min-w-0 flex-1">
+                    <div className="p-2 rounded-lg bg-primary/10">
+                      <ExternalLink className="h-4 w-4 text-primary" />
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <h4 className="font-medium truncate">{sheet.title}</h4>
+                      <p className="text-xs text-muted-foreground truncate">{sheet.url}</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center space-x-2 ml-2">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => window.open(sheet.url, '_blank')}
+                      title="Open in new tab"
+                    >
+                      <ExternalLink className="h-4 w-4" />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => handleRemoveSheet(sheet.id)}
+                      className="text-destructive opacity-0 group-hover:opacity-100 transition-opacity"
+                      title="Remove sheet"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
       {/* Create Task Dialog */}
       <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
         <DialogContent className="max-w-md">
@@ -589,6 +737,56 @@ const AdminTasks = ({ onBack }: AdminTasksProps) => {
             >
               {actionLoading && <Loader2 className="h-4 w-4 animate-spin mr-2" />}
               Reject Task
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Add External Sheet Dialog */}
+      <Dialog open={showAddSheetDialog} onOpenChange={setShowAddSheetDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Add External Sheet</DialogTitle>
+            <DialogDescription>
+              Add a link to an external task sheet or spreadsheet
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-4">
+            <div>
+              <Label htmlFor="sheetTitle">Sheet Title *</Label>
+              <Input
+                id="sheetTitle"
+                value={newSheet.title}
+                onChange={(e) => setNewSheet(prev => ({ ...prev, title: e.target.value }))}
+                placeholder="e.g. Marketing Tasks, Q1 Goals"
+              />
+            </div>
+
+            <div>
+              <Label htmlFor="sheetUrl">Sheet URL *</Label>
+              <Input
+                id="sheetUrl"
+                value={newSheet.url}
+                onChange={(e) => setNewSheet(prev => ({ ...prev, url: e.target.value }))}
+                placeholder="https://docs.google.com/spreadsheets/..."
+              />
+              <p className="text-xs text-muted-foreground mt-1">
+                Google Sheets, Excel Online, Notion, or any external link
+              </p>
+            </div>
+          </div>
+
+          <DialogFooter>
+            <Button variant="outline" onClick={() => {
+              setShowAddSheetDialog(false);
+              setNewSheet({ title: "", url: "" });
+            }}>
+              Cancel
+            </Button>
+            <Button onClick={handleAddSheet} className="gradient-primary text-white">
+              <Plus className="h-4 w-4 mr-2" />
+              Add Sheet
             </Button>
           </DialogFooter>
         </DialogContent>

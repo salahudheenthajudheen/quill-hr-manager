@@ -24,6 +24,7 @@ import AdminAttendance from "./AdminAttendance";
 import AdminLeaveRequests from "./AdminLeaveRequests";
 import AdminTasks from "./AdminTasks";
 import AdminManagement from "./AdminManagement";
+import AdminSettings from "./AdminSettings";
 import { employeeService } from "@/services/employee.service";
 import { attendanceService } from "@/services/attendance.service";
 import { taskService } from "@/services/task.service";
@@ -114,16 +115,7 @@ const AdminDashboard = ({ adminData, onLogout }: AdminDashboardProps) => {
       case "admins":
         return <AdminManagement onBack={() => setCurrentPage("dashboard")} currentAdminEmail={adminData.email} />;
       case "settings":
-        return (
-          <div className="p-6">
-            <h2 className="text-2xl font-bold mb-4">Settings</h2>
-            <Card>
-              <CardContent className="p-6">
-                <p className="text-muted-foreground">Settings panel coming soon...</p>
-              </CardContent>
-            </Card>
-          </div>
-        );
+        return <AdminSettings onBack={() => setCurrentPage("dashboard")} />;
       default:
         return (
           <div className="p-6 space-y-6">

@@ -84,10 +84,11 @@ async function generateEmployeeId(): Promise<string> {
 }
 
 /**
- * Validate employee ID format (GW-XXXXXX)
+ * Validate employee ID format
+ * Accepts any alphanumeric string with optional dashes/underscores
  */
 function isValidEmployeeId(id: string): boolean {
-    return /^GW-\d{1,6}$/.test(id);
+    return id.length > 0 && id.length <= 30 && /^[a-zA-Z0-9_-]+$/.test(id);
 }
 
 // ============================================
@@ -133,7 +134,7 @@ app.post('/api/employees', async (req, res) => {
             // Validate format
             if (!isValidEmployeeId(employeeId)) {
                 return res.status(400).json({
-                    error: 'Invalid employee ID format. Must be GW-XXXXXX (e.g., GW-001234)'
+                    error: 'Invalid employee ID format. Use alphanumeric characters, dashes, or underscores (max 30 chars)'
                 });
             }
             // Check if ID already exists

@@ -470,19 +470,15 @@ const AdminEmployees = ({ onBack }: AdminEmployeesProps) => {
             <div className="space-y-2">
               <Label htmlFor="employeeId">Employee ID</Label>
               <div className="flex gap-2">
-                <div className="relative flex-1">
-                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground font-mono">GW-</span>
-                  <Input
-                    id="employeeId"
-                    value={newEmployee.employeeId.replace('GW-', '')}
-                    onChange={(e) => {
-                      const value = e.target.value.replace(/\D/g, '').slice(0, 6);
-                      setNewEmployee(prev => ({ ...prev, employeeId: value ? `GW-${value}` : '' }));
-                    }}
-                    placeholder="001234"
-                    className="pl-12 font-mono"
-                  />
-                </div>
+                <Input
+                  id="employeeId"
+                  value={newEmployee.employeeId}
+                  onChange={(e) => {
+                    setNewEmployee(prev => ({ ...prev, employeeId: e.target.value }));
+                  }}
+                  placeholder="e.g. EMP001, GW-001234, ABC123"
+                  className="font-mono flex-1"
+                />
                 <Button
                   type="button"
                   variant="outline"
@@ -504,7 +500,7 @@ const AdminEmployees = ({ onBack }: AdminEmployeesProps) => {
                   {generatingId ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />}
                 </Button>
               </div>
-              <p className="text-xs text-muted-foreground">Leave blank to auto-generate</p>
+              <p className="text-xs text-muted-foreground">Enter any format or leave blank to auto-generate</p>
             </div>
             <div className="space-y-2">
               <Label htmlFor="email">Email *</Label>
