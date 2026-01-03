@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /**
  * Create Admin User Script
  * Creates an admin user in Appwrite Auth and adds them to the admins collection

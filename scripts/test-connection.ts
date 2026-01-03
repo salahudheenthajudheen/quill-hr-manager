@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /**
  * Test Appwrite Connection
  * Verifies that the Appwrite backend is properly configured and accessible

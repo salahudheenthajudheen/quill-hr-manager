@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /**
  * Delete All Employees Script
  * Removes all employee documents and their auth users

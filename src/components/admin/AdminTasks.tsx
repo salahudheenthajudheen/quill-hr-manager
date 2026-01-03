@@ -730,7 +730,7 @@ const AdminTasks = ({ onBack }: AdminTasksProps) => {
             <Button
               variant="destructive"
               onClick={() => {
-                const note = (selectedTask as any)?._rejectionNote || '';
+                const note = (selectedTask as Task & { _rejectionNote?: string })?._rejectionNote || '';
                 if (selectedTask) handleRejectTask(selectedTask, note);
               }}
               disabled={actionLoading}

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /**
  * Recreate Tasks Collection
  * Deletes and recreates the tasks collection with optimized attributes

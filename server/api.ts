@@ -105,7 +105,7 @@ app.get('/api/employees/generate-id', async (req, res) => {
     try {
         const employeeId = await generateEmployeeId();
         res.json({ employeeId });
-    } catch (error: any) {
+    } catch (error: unknown) {
         res.status(500).json({ error: 'Failed to generate employee ID' });
     }
 });
@@ -195,14 +195,15 @@ app.post('/api/employees', async (req, res) => {
             message: `Employee ${name} (${finalEmployeeId}) created successfully with login credentials`
         });
 
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error('Create employee error:', error);
+        const err = error as { code?: number; message?: string };
 
-        if (error.code === 409) {
+        if (err.code === 409) {
             return res.status(409).json({ error: 'An employee with this email already exists' });
         }
 
-        res.status(500).json({ error: error.message || 'Failed to create employee' });
+        res.status(500).json({ error: err.message || 'Failed to create employee' });
     }
 });
 
@@ -228,9 +229,9 @@ app.delete('/api/employees/:id', async (req, res) => {
 
         res.json({ success: true, message: 'Employee deleted successfully' });
 
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error('Delete employee error:', error);
-        res.status(500).json({ error: error.message || 'Failed to delete employee' });
+        res.status(500).json({ error: (error as Error).message || 'Failed to delete employee' });
     }
 });
 
@@ -245,9 +246,9 @@ app.get('/api/admins', async (req, res) => {
             Query.limit(100)
         ]);
         res.json({ admins: admins.documents, total: admins.total });
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error('Get admins error:', error);
-        res.status(500).json({ error: error.message || 'Failed to fetch admins' });
+        res.status(500).json({ error: (error as Error).message || 'Failed to fetch admins' });
     }
 });
 
@@ -303,14 +304,15 @@ app.post('/api/admins', async (req, res) => {
             message: `Admin ${name} created successfully`
         });
 
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error('Create admin error:', error);
+        const err = error as { code?: number; message?: string };
 
-        if (error.code === 409) {
+        if (err.code === 409) {
             return res.status(409).json({ error: 'An admin with this email already exists' });
         }
 
-        res.status(500).json({ error: error.message || 'Failed to create admin' });
+        res.status(500).json({ error: err.message || 'Failed to create admin' });
     }
 });
 
@@ -336,9 +338,9 @@ app.delete('/api/admins/:id', async (req, res) => {
 
         res.json({ success: true, message: 'Admin deleted successfully' });
 
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error('Delete admin error:', error);
-        res.status(500).json({ error: error.message || 'Failed to delete admin' });
+        res.status(500).json({ error: (error as Error).message || 'Failed to delete admin' });
     }
 });
 

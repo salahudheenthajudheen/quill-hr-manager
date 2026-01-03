@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /**
  * Set Collection Permissions Script
  * Sets proper permissions on collections so users can read/write documents

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /**
  * Fix Collections Script
  * Adds missing attributes to existing collections

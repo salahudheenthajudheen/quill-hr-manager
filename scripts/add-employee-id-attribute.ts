@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /**
  * Add employeeId attribute to employees collection
  * Run: npx tsx scripts/add-employee-id-attribute.ts
@@ -41,7 +42,7 @@ async function addEmployeeIdAttribute() {
                 DATABASE_ID,
                 'employees',
                 'employeeId_unique',
-                'unique',
+                'unique' as any,
                 ['employeeId']
             );
             console.log('✅ Unique index on employeeId created');

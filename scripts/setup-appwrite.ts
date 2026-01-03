@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /**
  * Appwrite Database Setup Script
  * Run this script to automatically create all collections for the HR Portal

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /**
  * Create Employee Script
  * Creates an employee with both auth account and database document
