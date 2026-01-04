@@ -3,9 +3,17 @@ import { Client, Account, Databases, Storage, ID, Query } from 'appwrite';
 // Initialize Appwrite Client
 const client = new Client();
 
+// Fallback values for production (when env vars aren't available)
+const ENDPOINT = import.meta.env.VITE_APPWRITE_ENDPOINT || 'https://fra.cloud.appwrite.io/v1';
+const PROJECT_ID = import.meta.env.VITE_APPWRITE_PROJECT_ID || '';
+
+if (!PROJECT_ID) {
+  console.error('VITE_APPWRITE_PROJECT_ID is not set. Please configure environment variables.');
+}
+
 client
-  .setEndpoint(import.meta.env.VITE_APPWRITE_ENDPOINT)
-  .setProject(import.meta.env.VITE_APPWRITE_PROJECT_ID);
+  .setEndpoint(ENDPOINT)
+  .setProject(PROJECT_ID);
 
 // Initialize Services
 export const account = new Account(client);
