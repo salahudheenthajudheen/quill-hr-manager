@@ -9,6 +9,12 @@ import type { EmployeeProfile } from './auth.service';
 // API server URL for operations requiring server-side access
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
 
+// Appwrite Cloud Function URL (fallback when local server not available)
+const FUNCTION_URL = import.meta.env.VITE_CREATE_EMPLOYEE_FUNCTION_URL || '';
+
+// Check if running in production (deployed site)
+const isProduction = import.meta.env.PROD;
+
 export interface CreateEmployeeData {
     name: string;
     email: string;
@@ -53,10 +59,25 @@ export interface Employee extends EmployeeProfile {
 
 class EmployeeService {
     /**
-     * Generate a new employee ID from the API server
+     * Generate a new employee ID from the API server or Cloud Function
      */
     async generateEmployeeId(): Promise<string> {
         try {
+            // In production, use Cloud Function if available
+            if (isProduction && FUNCTION_URL) {
+                const response = await fetch(FUNCTION_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ action: 'generate-id' }),
+                });
+                const result = await response.json();
+                if (result.success) {
+                    return result.employeeId;
+                }
+                throw new Error(result.error || 'Failed to generate ID');
+            }
+
+            // Use local API server
             const response = await fetch(`${API_URL}/api/employees/generate-id`);
             const result = await response.json();
             if (!response.ok) {
@@ -73,26 +94,41 @@ class EmployeeService {
 
     /**
      * Create a new employee with login credentials
-     * Uses the API server to create both auth account and employee document
+     * Uses the API server or Appwrite Cloud Function
      */
     async createEmployee(data: CreateEmployeeData): Promise<Employee> {
         try {
-            const response = await fetch(`${API_URL}/api/employees`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(data),
-            });
+            let response: Response;
+            let result: { success?: boolean; error?: string; employee?: { id: string } };
 
-            const result = await response.json();
+            // In production with Cloud Function configured, use it
+            if (isProduction && FUNCTION_URL) {
+                response = await fetch(FUNCTION_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ action: 'create', ...data }),
+                });
+                result = await response.json();
 
-            if (!response.ok) {
-                throw new Error(result.error || 'Failed to create employee');
+                if (!result.success) {
+                    throw new Error(result.error || 'Failed to create employee');
+                }
+            } else {
+                // Use local API server
+                response = await fetch(`${API_URL}/api/employees`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data),
+                });
+                result = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(result.error || 'Failed to create employee');
+                }
             }
 
             // Refresh the employee from database
-            const employee = await this.getEmployee(result.employee.id);
+            const employee = await this.getEmployee(result.employee!.id);
             if (!employee) {
                 throw new Error('Employee created but not found');
             }
@@ -101,6 +137,9 @@ class EmployeeService {
         } catch (error: unknown) {
             console.error('Create employee error:', error);
             if (error instanceof TypeError && error.message.includes('fetch')) {
+                if (isProduction) {
+                    throw new Error('Employee creation service unavailable. Please contact administrator.');
+                }
                 throw new Error('API server not running. Please start it with: npm run server');
             }
             throw error;
