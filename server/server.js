@@ -180,7 +180,7 @@ app.delete('/api/employees/:id', async (req, res) => {
     }
 });
 
-// Start server
-app.listen(PORT, () => {
+// Start server - bind to 0.0.0.0 for Railway
+app.listen(PORT, '0.0.0.0', () => {
     console.log(`🚀 HR Portal API running on port ${PORT}`);
 });
