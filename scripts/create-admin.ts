@@ -6,6 +6,7 @@
  * Usage: npx tsx scripts/create-admin.ts
  */
 
+import 'dotenv/config';
 import { Client, Databases, Users, ID } from 'node-appwrite';
 
 // ============================================

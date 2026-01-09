@@ -10,6 +10,7 @@
  *   npx tsx scripts/create-employee.ts john@company.com Password123 "John Doe" "+1234567890" "Engineering" "Developer"
  */
 
+import 'dotenv/config';
 import { Client, Databases, Users, ID } from 'node-appwrite';
 
 const APPWRITE_ENDPOINT = process.env.VITE_APPWRITE_ENDPOINT || 'https://cloud.appwrite.io/v1';

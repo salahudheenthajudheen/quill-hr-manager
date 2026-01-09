@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /**
- * Delete All Employees Script
- * Removes all employee documents and their auth users
+ * Delete All Admins Script
+ * Removes all admin documents and their auth users
  */
 
 import 'dotenv/config';
@@ -21,38 +21,38 @@ const client = new Client()
 const databases = new Databases(client);
 const users = new Users(client);
 
-async function deleteAllEmployees() {
-    console.log('🗑️  Deleting all employees...\n');
+async function deleteAllAdmins() {
+    console.log('🗑️  Deleting all admins...\n');
 
     try {
-        // Get all employees
-        const employees = await databases.listDocuments(DATABASE_ID, 'employees', [Query.limit(100)]);
+        // Get all admins
+        const admins = await databases.listDocuments(DATABASE_ID, 'admins', [Query.limit(100)]);
 
-        console.log(`Found ${employees.total} employee(s) to delete:\n`);
+        console.log(`Found ${admins.total} admin(s) to delete:\n`);
 
-        for (const employee of employees.documents) {
-            console.log(`   Deleting ${employee.name} (${employee.email})...`);
+        for (const admin of admins.documents) {
+            console.log(`   Deleting ${admin.name} (${admin.email})...`);
 
             // Delete the auth user if exists
-            if (employee.authUserId && !employee.authUserId.startsWith('pending-')) {
+            if (admin.authUserId) {
                 try {
-                    await users.delete(employee.authUserId);
+                    await users.delete(admin.authUserId);
                     console.log(`      ✅ Auth user deleted`);
                 } catch (e: any) {
                     console.log(`      ⚠️  Auth user not found or already deleted`);
                 }
             }
 
-            // Delete the employee document
-            await databases.deleteDocument(DATABASE_ID, 'employees', employee.$id);
-            console.log(`      ✅ Employee document deleted`);
+            // Delete the admin document
+            await databases.deleteDocument(DATABASE_ID, 'admins', admin.$id);
+            console.log(`      ✅ Admin document deleted`);
         }
 
-        console.log(`\n✅ Deleted ${employees.total} employee(s) successfully!`);
+        console.log(`\n✅ Deleted ${admins.total} admin(s) successfully!`);
 
     } catch (error: any) {
         console.error('❌ Error:', error.message);
     }
 }
 
-deleteAllEmployees();
+deleteAllAdmins();
