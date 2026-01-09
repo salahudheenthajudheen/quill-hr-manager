@@ -146,15 +146,8 @@ const EmployeeSignIn = () => {
                 </Card>
 
                 {/* Footer */}
-                <div className="text-center text-sm text-muted-foreground space-y-2">
+                <div className="text-center text-sm text-muted-foreground">
                     <p>Secure employee access • Protected by enterprise security</p>
-                    <Button
-                        variant="link"
-                        className="text-primary"
-                        onClick={() => navigate('/admin/login')}
-                    >
-                        Admin Login →
-                    </Button>
                 </div>
             </div>
         </div>
