@@ -4,6 +4,7 @@
  * Verifies that the Appwrite backend is properly configured and accessible
  */
 
+import 'dotenv/config';
 import { Client, Databases, Users, Query } from 'node-appwrite';
 
 const APPWRITE_ENDPOINT = process.env.VITE_APPWRITE_ENDPOINT || 'https://cloud.appwrite.io/v1';

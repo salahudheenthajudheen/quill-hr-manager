@@ -13,8 +13,10 @@ import {
   UserCheck,
   UserX,
   Loader2,
+  UserPlus,
 } from "lucide-react";
 import AdminAttendance from "./AdminAttendance";
+import AdminEmployees from "./AdminEmployees";
 import AdminSettings from "./AdminSettings";
 import { employeeService } from "@/services/employee.service";
 import { attendanceService } from "@/services/attendance.service";
@@ -24,7 +26,7 @@ interface AdminDashboardProps {
   onLogout: () => void;
 }
 
-type AdminPage = "dashboard" | "attendance" | "settings";
+type AdminPage = "dashboard" | "employees" | "attendance" | "settings";
 
 const AdminDashboard = ({ adminData, onLogout }: AdminDashboardProps) => {
   const [currentPage, setCurrentPage] = useState<AdminPage>("dashboard");
@@ -72,12 +74,15 @@ const AdminDashboard = ({ adminData, onLogout }: AdminDashboardProps) => {
 
   const navigationItems = [
     { id: "dashboard", label: "Dashboard", icon: TrendingUp },
+    { id: "employees", label: "Employees", icon: UserPlus },
     { id: "attendance", label: "Attendance", icon: Clock },
     { id: "settings", label: "Settings", icon: Settings },
   ];
 
   const renderContent = () => {
     switch (currentPage) {
+      case "employees":
+        return <AdminEmployees onBack={() => setCurrentPage("dashboard")} />;
       case "attendance":
         return <AdminAttendance onBack={() => setCurrentPage("dashboard")} />;
       case "settings":
