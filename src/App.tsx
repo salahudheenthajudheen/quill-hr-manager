@@ -10,9 +10,6 @@ import { AdminRoute, EmployeeRoute, PublicOnlyRoute } from "@/components/Protect
 import EmployeeSignIn from "@/components/hr/EmployeeSignIn";
 import EmployeeDashboard from "@/components/hr/EmployeeDashboard";
 import MarkAttendance from "@/components/hr/MarkAttendance";
-import ViewReport from "@/components/hr/ViewReport";
-import ApplyLeave from "@/components/hr/ApplyLeave";
-import EmployeeTasks from "@/components/hr/EmployeeTasks";
 
 // Admin Components
 import AdminLogin from "@/components/admin/AdminLogin";
@@ -38,12 +35,6 @@ const EmployeePageWrapper = ({ Component }: EmployeePageWrapperProps) => {
         break;
       case "attendance":
         navigate("/employee/attendance");
-        break;
-      case "tasks":
-        navigate("/employee/tasks");
-        break;
-      case "leave":
-        navigate("/employee/leave");
         break;
       default:
         navigate("/employee/dashboard");
@@ -98,30 +89,6 @@ const App = () => (
               element={
                 <EmployeeRoute>
                   <EmployeePageWrapper Component={MarkAttendance} />
-                </EmployeeRoute>
-              }
-            />
-            <Route
-              path="/employee/tasks"
-              element={
-                <EmployeeRoute>
-                  <EmployeePageWrapper Component={EmployeeTasks} />
-                </EmployeeRoute>
-              }
-            />
-            <Route
-              path="/employee/leave"
-              element={
-                <EmployeeRoute>
-                  <EmployeePageWrapper Component={ApplyLeave} />
-                </EmployeeRoute>
-              }
-            />
-            <Route
-              path="/employee/reports"
-              element={
-                <EmployeeRoute>
-                  <EmployeePageWrapper Component={ViewReport} />
                 </EmployeeRoute>
               }
             />

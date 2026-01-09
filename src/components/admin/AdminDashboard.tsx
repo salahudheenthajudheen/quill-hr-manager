@@ -5,8 +5,6 @@ import { Badge } from "@/components/ui/badge";
 import {
   Users,
   Clock,
-  Calendar,
-  CheckSquare,
   TrendingUp,
   AlertTriangle,
   FileText,
@@ -14,28 +12,19 @@ import {
   LogOut,
   UserCheck,
   UserX,
-  CalendarCheck,
-  CalendarX,
   Loader2,
-  Shield
 } from "lucide-react";
-import AdminEmployees from "./AdminEmployees";
 import AdminAttendance from "./AdminAttendance";
-import AdminLeaveRequests from "./AdminLeaveRequests";
-import AdminTasks from "./AdminTasks";
-import AdminManagement from "./AdminManagement";
 import AdminSettings from "./AdminSettings";
 import { employeeService } from "@/services/employee.service";
 import { attendanceService } from "@/services/attendance.service";
-import { taskService } from "@/services/task.service";
-import { leaveService } from "@/services/leave.service";
 
 interface AdminDashboardProps {
   adminData: { email: string; name: string; role: string };
   onLogout: () => void;
 }
 
-type AdminPage = "dashboard" | "employees" | "attendance" | "leave" | "tasks" | "admins" | "settings";
+type AdminPage = "dashboard" | "attendance" | "settings";
 
 const AdminDashboard = ({ adminData, onLogout }: AdminDashboardProps) => {
   const [currentPage, setCurrentPage] = useState<AdminPage>("dashboard");
@@ -44,10 +33,6 @@ const AdminDashboard = ({ adminData, onLogout }: AdminDashboardProps) => {
     totalEmployees: 0,
     presentToday: 0,
     absentToday: 0,
-    pendingLeaves: 0,
-    completedTasks: 0,
-    pendingTasks: 0,
-    onLeaveToday: 0,
     lateArrivals: 0
   });
 
@@ -58,22 +43,15 @@ const AdminDashboard = ({ adminData, onLogout }: AdminDashboardProps) => {
 
       try {
         setLoading(true);
-        const [employeeStats, attendanceStats, taskStats, leaveStats, employeesOnLeave] = await Promise.all([
+        const [employeeStats, attendanceStats] = await Promise.all([
           employeeService.getEmployeeStats(),
           attendanceService.getAttendanceStats(),
-          taskService.getTaskStats(),
-          leaveService.getLeaveStats(),
-          leaveService.getEmployeesOnLeaveToday(),
         ]);
 
         setDashboardStats({
           totalEmployees: employeeStats.total,
           presentToday: attendanceStats.present + attendanceStats.wfh,
           absentToday: employeeStats.active - (attendanceStats.present + attendanceStats.wfh + attendanceStats.late),
-          pendingLeaves: leaveStats.pending,
-          completedTasks: taskStats.completed + taskStats.accepted,
-          pendingTasks: taskStats.pending + taskStats.inProgress,
-          onLeaveToday: employeesOnLeave.length,
           lateArrivals: attendanceStats.late,
         });
       } catch (error) {
@@ -94,26 +72,14 @@ const AdminDashboard = ({ adminData, onLogout }: AdminDashboardProps) => {
 
   const navigationItems = [
     { id: "dashboard", label: "Dashboard", icon: TrendingUp },
-    { id: "employees", label: "Employees", icon: Users },
     { id: "attendance", label: "Attendance", icon: Clock },
-    { id: "leave", label: "Leave Requests", icon: Calendar },
-    { id: "tasks", label: "Task Management", icon: CheckSquare },
-    { id: "admins", label: "Admin Management", icon: Shield },
     { id: "settings", label: "Settings", icon: Settings },
   ];
 
   const renderContent = () => {
     switch (currentPage) {
-      case "employees":
-        return <AdminEmployees onBack={() => setCurrentPage("dashboard")} />;
       case "attendance":
         return <AdminAttendance onBack={() => setCurrentPage("dashboard")} />;
-      case "leave":
-        return <AdminLeaveRequests onBack={() => setCurrentPage("dashboard")} />;
-      case "tasks":
-        return <AdminTasks onBack={() => setCurrentPage("dashboard")} />;
-      case "admins":
-        return <AdminManagement onBack={() => setCurrentPage("dashboard")} currentAdminEmail={adminData.email} />;
       case "settings":
         return <AdminSettings onBack={() => setCurrentPage("dashboard")} />;
       default:
@@ -173,46 +139,11 @@ const AdminDashboard = ({ adminData, onLogout }: AdminDashboardProps) => {
                 <CardContent className="p-4">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-sm text-muted-foreground">Pending Leaves</p>
-                      <p className="text-2xl font-bold text-warning">{dashboardStats.pendingLeaves}</p>
+                      <p className="text-sm text-muted-foreground">Late Arrivals</p>
+                      <p className="text-2xl font-bold text-warning">{dashboardStats.lateArrivals}</p>
                     </div>
-                    <CalendarX className="h-8 w-8 text-warning" />
+                    <AlertTriangle className="h-8 w-8 text-warning" />
                   </div>
-                </CardContent>
-              </Card>
-            </div>
-
-            {/* Secondary Stats */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              <Card>
-                <CardContent className="p-4 text-center">
-                  <CalendarCheck className="h-6 w-6 mx-auto text-accent mb-2" />
-                  <div className="text-lg font-semibold">{dashboardStats.onLeaveToday}</div>
-                  <div className="text-sm text-muted-foreground">On Leave Today</div>
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardContent className="p-4 text-center">
-                  <AlertTriangle className="h-6 w-6 mx-auto text-warning mb-2" />
-                  <div className="text-lg font-semibold">{dashboardStats.lateArrivals}</div>
-                  <div className="text-sm text-muted-foreground">Late Arrivals</div>
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardContent className="p-4 text-center">
-                  <CheckSquare className="h-6 w-6 mx-auto text-success mb-2" />
-                  <div className="text-lg font-semibold">{dashboardStats.completedTasks}</div>
-                  <div className="text-sm text-muted-foreground">Completed Tasks</div>
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardContent className="p-4 text-center">
-                  <Clock className="h-6 w-6 mx-auto text-primary mb-2" />
-                  <div className="text-lg font-semibold">{dashboardStats.pendingTasks}</div>
-                  <div className="text-sm text-muted-foreground">Pending Tasks</div>
                 </CardContent>
               </Card>
             </div>
@@ -256,15 +187,7 @@ const AdminDashboard = ({ adminData, onLogout }: AdminDashboardProps) => {
             </Card>
 
             {/* Quick Actions */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-              <Button
-                onClick={() => setCurrentPage("employees")}
-                variant="outline"
-                className="h-16 flex-col space-y-2"
-              >
-                <Users className="h-6 w-6" />
-                <span>Manage Employees</span>
-              </Button>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <Button
                 onClick={() => setCurrentPage("attendance")}
                 variant="outline"
@@ -274,20 +197,12 @@ const AdminDashboard = ({ adminData, onLogout }: AdminDashboardProps) => {
                 <span>View Attendance</span>
               </Button>
               <Button
-                onClick={() => setCurrentPage("leave")}
+                onClick={() => setCurrentPage("settings")}
                 variant="outline"
                 className="h-16 flex-col space-y-2"
               >
-                <Calendar className="h-6 w-6" />
-                <span>Leave Requests</span>
-              </Button>
-              <Button
-                onClick={() => setCurrentPage("tasks")}
-                variant="outline"
-                className="h-16 flex-col space-y-2"
-              >
-                <CheckSquare className="h-6 w-6" />
-                <span>Assign Tasks</span>
+                <Settings className="h-6 w-6" />
+                <span>Settings</span>
               </Button>
             </div>
           </div>
@@ -306,7 +221,7 @@ const AdminDashboard = ({ adminData, onLogout }: AdminDashboardProps) => {
             </div>
             <div>
               <h2 className="font-bold">HR Admin</h2>
-              <p className="text-xs text-muted-foreground">Management Portal</p>
+              <p className="text-xs text-muted-foreground">Attendance Portal</p>
             </div>
           </div>
         </div>
