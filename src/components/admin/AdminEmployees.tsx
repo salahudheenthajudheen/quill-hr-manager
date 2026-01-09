@@ -23,6 +23,7 @@ import {
     Calendar,
     Key,
     Hash,
+    Trash2,
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { employeeService, type Employee } from "@/services/employee.service";
@@ -34,6 +35,7 @@ interface AdminEmployeesProps {
 const AdminEmployees = ({ onBack }: AdminEmployeesProps) => {
     const { toast } = useToast();
     const [loading, setLoading] = useState(false);
+    const [deleting, setDeleting] = useState<string | null>(null);
     const [employees, setEmployees] = useState<Employee[]>([]);
     const [loadingEmployees, setLoadingEmployees] = useState(true);
 
@@ -198,6 +200,43 @@ const AdminEmployees = ({ onBack }: AdminEmployeesProps) => {
             });
         } finally {
             setLoading(false);
+        }
+    };
+
+    const handleDelete = async (employeeId: string, employeeName: string) => {
+        if (!confirm(`Are you sure you want to delete ${employeeName}? This action cannot be undone.`)) {
+            return;
+        }
+
+        setDeleting(employeeId);
+        try {
+            // Use the API to delete (handles both document and auth user)
+            const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
+            const response = await fetch(`${API_URL}/api/employees/${employeeId}`, {
+                method: 'DELETE',
+            });
+
+            if (!response.ok) {
+                const result = await response.json();
+                throw new Error(result.error || 'Failed to delete employee');
+            }
+
+            toast({
+                title: "Employee Deleted",
+                description: `${employeeName} has been deleted successfully.`,
+            });
+
+            // Reload employees
+            loadEmployees();
+        } catch (error: unknown) {
+            const err = error as { message?: string };
+            toast({
+                title: "Delete Failed",
+                description: err.message || "Failed to delete employee",
+                variant: "destructive",
+            });
+        } finally {
+            setDeleting(null);
         }
     };
 
@@ -418,13 +457,29 @@ const AdminEmployees = ({ onBack }: AdminEmployeesProps) => {
                                         className="p-3 rounded-lg border hover:bg-muted/50 transition-colors"
                                     >
                                         <div className="flex items-center justify-between">
-                                            <div>
-                                                <p className="font-medium">{emp.name}</p>
-                                                <p className="text-xs text-muted-foreground">{emp.department}</p>
+                                            <div className="flex-1 min-w-0">
+                                                <p className="font-medium truncate">{emp.name}</p>
+                                                <p className="text-xs text-muted-foreground truncate">{emp.department}</p>
                                             </div>
-                                            <Badge variant="outline" className="font-mono text-xs">
-                                                {emp.employeeId || 'N/A'}
-                                            </Badge>
+                                            <div className="flex items-center gap-2 ml-2">
+                                                <Badge variant="outline" className="font-mono text-xs">
+                                                    {emp.employeeId || 'N/A'}
+                                                </Badge>
+                                                <Button
+                                                    variant="ghost"
+                                                    size="icon"
+                                                    className="h-8 w-8 text-destructive hover:text-destructive hover:bg-destructive/10"
+                                                    onClick={() => handleDelete(emp.$id, emp.name)}
+                                                    disabled={deleting === emp.$id}
+                                                    title="Delete employee"
+                                                >
+                                                    {deleting === emp.$id ? (
+                                                        <Loader2 className="h-4 w-4 animate-spin" />
+                                                    ) : (
+                                                        <Trash2 className="h-4 w-4" />
+                                                    )}
+                                                </Button>
+                                            </div>
                                         </div>
                                     </div>
                                 ))}
