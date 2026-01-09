@@ -4,6 +4,7 @@
  * Run: npx tsx scripts/add-employee-id-attribute.ts
  */
 
+import 'dotenv/config';
 import { Client, Databases } from 'node-appwrite';
 
 const APPWRITE_ENDPOINT = process.env.VITE_APPWRITE_ENDPOINT || '';

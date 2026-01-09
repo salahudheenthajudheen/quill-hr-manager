@@ -90,7 +90,7 @@ class AttendanceService {
                 employeeName: data.employeeName,
                 date: today,
                 checkIn: checkInTime,
-                checkInLocation: data.location,
+                checkInLocation: JSON.stringify(data.location),
                 status: data.attendanceType === 'wfh' ? 'wfh' : (isLate ? 'late' : 'present'),
                 attendanceType: data.attendanceType,
             }
@@ -131,7 +131,7 @@ class AttendanceService {
             attendanceId,
             {
                 checkOut: checkOutTime.toISOString(),
-                checkOutLocation: location,
+                checkOutLocation: JSON.stringify(location),
                 workingHours: Math.round(workingHours * 100) / 100,
                 status,
             }
